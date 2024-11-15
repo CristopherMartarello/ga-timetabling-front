@@ -1,10 +1,8 @@
 "use client";
-// import { useState } from "react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-// import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,19 +15,37 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Send } from "lucide-react";
+import { useState, useEffect } from "react";
 
+// Validação com Zod
 const formSchema = z.object({
   probabilidade_cruzamento: z.number().min(0).max(100).optional(),
-  mutacao: z.string().min(0).max(100).optional(),
-  qtd_elitismo: z.number().min(0).max(0).optional(),
+  mutacao: z.number().min(0).max(100).optional(),
+  qtd_elitismo: z.number().min(0).optional(),
   iteracoes: z.number().min(0).optional(),
   iteracoes_sem_melhoria: z.number().min(0).optional(),
 });
 
 export default function MainForm() {
+  const [probabilidadeCruzamento, setProbabilidadeCruzamento] = useState<number | undefined>(0);
+  const [mutacao, setMutacao] = useState<number | undefined>(0);
+  const [qtdElitismo, setQtdElitismo] = useState<number | undefined>(0);
+  const [iteracoes, setIteracoes] = useState<number | undefined>(0);
+  const [iteracoesSemMelhoria, setIteracoesSemMelhoria] = useState<number | undefined>(0);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
+
+  useEffect(() => {
+    form.setValue("probabilidade_cruzamento", probabilidadeCruzamento ?? 0);
+    form.setValue("mutacao", mutacao ?? 0);
+    form.setValue("qtd_elitismo", qtdElitismo ?? 0);
+    form.setValue("iteracoes", iteracoes ?? 0);
+    form.setValue("iteracoes_sem_melhoria", iteracoesSemMelhoria ?? 0);
+  }, [
+    probabilidadeCruzamento, mutacao, qtdElitismo, iteracoes, iteracoesSemMelhoria, form
+  ]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -62,7 +78,13 @@ export default function MainForm() {
               <FormItem>
                 <FormLabel>Probabilidade de Cruzamento</FormLabel>
                 <FormControl>
-                  <Input placeholder="" type="number" {...field} />
+                  <Input
+                    placeholder=""
+                    type="number"
+                    {...field}
+                    value={probabilidadeCruzamento ?? 0} 
+                    onChange={(e) => setProbabilidadeCruzamento(Number(e.target.value))}
+                  />
                 </FormControl>
                 <FormDescription className="text-xs">
                   Apenas valores entre 0 ~ 100
@@ -79,7 +101,13 @@ export default function MainForm() {
               <FormItem>
                 <FormLabel>Probabilidade de Mutação</FormLabel>
                 <FormControl>
-                  <Input placeholder="" type="number" {...field} />
+                  <Input
+                    placeholder=""
+                    type="number"
+                    {...field}
+                    value={mutacao ?? 0}
+                    onChange={(e) => setMutacao(Number(e.target.value))}
+                  />
                 </FormControl>
                 <FormDescription className="text-xs">
                   Apenas valores entre 0 ~ 100
@@ -96,7 +124,13 @@ export default function MainForm() {
               <FormItem>
                 <FormLabel>Qtd. Cromossomos por Elitismo</FormLabel>
                 <FormControl>
-                  <Input placeholder="" type="number" {...field} />
+                  <Input
+                    placeholder=""
+                    type="number"
+                    {...field}
+                    value={qtdElitismo ?? 0} 
+                    onChange={(e) => setQtdElitismo(Number(e.target.value))}
+                  />
                 </FormControl>
                 <FormDescription className="text-xs">
                   Insira a quantidade de cromossomos selecionados por elitismo
@@ -113,7 +147,13 @@ export default function MainForm() {
               <FormItem>
                 <FormLabel>Qtd. Máxima de Iterações</FormLabel>
                 <FormControl>
-                  <Input placeholder="" type="number" {...field} />
+                  <Input
+                    placeholder=""
+                    type="number"
+                    {...field}
+                    value={iteracoes ?? 0} 
+                    onChange={(e) => setIteracoes(Number(e.target.value))}
+                  />
                 </FormControl>
                 <FormDescription className="text-xs">
                   Informe a quantidade máxima de iterações possíveis
@@ -130,7 +170,13 @@ export default function MainForm() {
               <FormItem>
                 <FormLabel>Qtd. Interações sem Melhoria</FormLabel>
                 <FormControl>
-                  <Input placeholder="" type="number" {...field} />
+                  <Input
+                    placeholder=""
+                    type="number"
+                    {...field}
+                    value={iteracoesSemMelhoria ?? 0} 
+                    onChange={(e) => setIteracoesSemMelhoria(Number(e.target.value))}
+                  />
                 </FormControl>
                 <FormDescription className="text-xs">
                   Quantidade de iterações sem melhorias que deve ser atingida
