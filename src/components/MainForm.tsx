@@ -27,22 +27,22 @@ const formSchema = z.object({
 });
 
 export default function MainForm() {
-  const [probabilidadeCruzamento, setProbabilidadeCruzamento] = useState<number | undefined>(0);
-  const [probabilidadeMutacao, setMutacao] = useState<number | undefined>(0);
-  const [qtdElitismo, setQtdElitismo] = useState<number | undefined>(0);
-  const [iteracoes, setIteracoes] = useState<number | undefined>(0);
-  const [iteracoesSemMelhoria, setIteracoesSemMelhoria] = useState<number | undefined>(0);
+  const [probabilidadeCruzamento, setProbabilidadeCruzamento] = useState<number | undefined>(undefined);
+  const [probabilidadeMutacao, setMutacao] = useState<number | undefined>(undefined);
+  const [qtdElitismo, setQtdElitismo] = useState<number | undefined>(undefined);
+  const [iteracoes, setIteracoes] = useState<number | undefined>(undefined);
+  const [iteracoesSemMelhoria, setIteracoesSemMelhoria] = useState<number | undefined>(undefined);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
   useEffect(() => {
-    form.setValue("probabilidadeCruzamento", probabilidadeCruzamento ?? 0);
-    form.setValue("probabilidadeMutacao", probabilidadeMutacao ?? 0);
-    form.setValue("qtdElitismo", qtdElitismo ?? 0);
-    form.setValue("iteracoes", iteracoes ?? 0);
-    form.setValue("iteracoesSemMelhoria", iteracoesSemMelhoria ?? 0);
+    form.setValue("probabilidadeCruzamento", probabilidadeCruzamento);
+    form.setValue("probabilidadeMutacao", probabilidadeMutacao);
+    form.setValue("qtdElitismo", qtdElitismo);
+    form.setValue("iteracoes", iteracoes);
+    form.setValue("iteracoesSemMelhoria", iteracoesSemMelhoria);
   }, [
     probabilidadeCruzamento, probabilidadeMutacao, qtdElitismo, iteracoes, iteracoesSemMelhoria, form
   ]);
@@ -63,6 +63,14 @@ export default function MainForm() {
     }
   }
 
+  const handleInputChange = (setter: React.Dispatch<React.SetStateAction<number | undefined>>, value: string) => {
+    if (value === "") {
+      setter(undefined); 
+    } else {
+      setter(Number(value));
+    }
+  };
+
   return (
     <Form {...form}>
       <form
@@ -81,11 +89,11 @@ export default function MainForm() {
                 <FormLabel>Probabilidade de Cruzamento</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder=""
+                    placeholder="Digite um valor"
                     type="number"
                     {...field}
-                    value={probabilidadeCruzamento ?? 0} 
-                    onChange={(e) => setProbabilidadeCruzamento(Number(e.target.value))}
+                    value={probabilidadeCruzamento === undefined ? "" : probabilidadeCruzamento} 
+                    onChange={(e) => handleInputChange(setProbabilidadeCruzamento, e.target.value)} 
                   />
                 </FormControl>
                 <FormDescription className="text-xs">
@@ -104,11 +112,11 @@ export default function MainForm() {
                 <FormLabel>Probabilidade de Mutação</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder=""
+                    placeholder="Digite um valor"
                     type="number"
                     {...field}
-                    value={probabilidadeMutacao ?? 0}
-                    onChange={(e) => setMutacao(Number(e.target.value))}
+                    value={probabilidadeMutacao === undefined ? "" : probabilidadeMutacao} 
+                    onChange={(e) => handleInputChange(setMutacao, e.target.value)} 
                   />
                 </FormControl>
                 <FormDescription className="text-xs">
@@ -127,11 +135,11 @@ export default function MainForm() {
                 <FormLabel>Qtd. Cromossomos por Elitismo</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder=""
+                    placeholder="Digite um valor"
                     type="number"
                     {...field}
-                    value={qtdElitismo ?? 0} 
-                    onChange={(e) => setQtdElitismo(Number(e.target.value))}
+                    value={qtdElitismo === undefined ? "" : qtdElitismo} 
+                    onChange={(e) => handleInputChange(setQtdElitismo, e.target.value)} 
                   />
                 </FormControl>
                 <FormDescription className="text-xs">
@@ -150,11 +158,11 @@ export default function MainForm() {
                 <FormLabel>Qtd. Máxima de Iterações</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder=""
+                    placeholder="Digite um valor"
                     type="number"
                     {...field}
-                    value={iteracoes ?? 0} 
-                    onChange={(e) => setIteracoes(Number(e.target.value))}
+                    value={iteracoes === undefined ? "" : iteracoes} 
+                    onChange={(e) => handleInputChange(setIteracoes, e.target.value)} 
                   />
                 </FormControl>
                 <FormDescription className="text-xs">
@@ -173,11 +181,11 @@ export default function MainForm() {
                 <FormLabel>Qtd. Interações sem Melhoria</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder=""
+                    placeholder="Digite um valor"
                     type="number"
                     {...field}
-                    value={iteracoesSemMelhoria ?? 0} 
-                    onChange={(e) => setIteracoesSemMelhoria(Number(e.target.value))}
+                    value={iteracoesSemMelhoria === undefined ? "" : iteracoesSemMelhoria} 
+                    onChange={(e) => handleInputChange(setIteracoesSemMelhoria, e.target.value)} 
                   />
                 </FormControl>
                 <FormDescription className="text-xs">
