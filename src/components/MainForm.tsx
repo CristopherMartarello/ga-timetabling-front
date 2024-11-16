@@ -19,11 +19,11 @@ import { useState, useEffect } from "react";
 
 // Validação com Zod
 const formSchema = z.object({
-  probabilidade_cruzamento: z.number().min(0).max(100).optional(),
+  probabilidadeCruzamento: z.number().min(0).max(100).optional(),
   mutacao: z.number().min(0).max(100).optional(),
-  qtd_elitismo: z.number().min(0).optional(),
+  qtdElitismo: z.number().min(0).optional(),
   iteracoes: z.number().min(0).optional(),
-  iteracoes_sem_melhoria: z.number().min(0).optional(),
+  iteracoesSemMelhoria: z.number().min(0).optional(),
 });
 
 export default function MainForm() {
@@ -38,11 +38,11 @@ export default function MainForm() {
   });
 
   useEffect(() => {
-    form.setValue("probabilidade_cruzamento", probabilidadeCruzamento ?? 0);
+    form.setValue("probabilidadeCruzamento", probabilidadeCruzamento ?? 0);
     form.setValue("mutacao", mutacao ?? 0);
-    form.setValue("qtd_elitismo", qtdElitismo ?? 0);
+    form.setValue("qtdElitismo", qtdElitismo ?? 0);
     form.setValue("iteracoes", iteracoes ?? 0);
-    form.setValue("iteracoes_sem_melhoria", iteracoesSemMelhoria ?? 0);
+    form.setValue("iteracoesSemMelhoria", iteracoesSemMelhoria ?? 0);
   }, [
     probabilidadeCruzamento, mutacao, qtdElitismo, iteracoes, iteracoesSemMelhoria, form
   ]);
@@ -56,6 +56,7 @@ export default function MainForm() {
         },
         body: JSON.stringify(values),
       });
+      console.log(response);
     } catch (error) {
       console.error("Form submission error", error);
       toast.error("Failed to submit the form. Please try again.");
@@ -74,7 +75,7 @@ export default function MainForm() {
         <div className="flex flex-col flex-grow space-y-8">
           <FormField
             control={form.control}
-            name="probabilidade_cruzamento"
+            name="probabilidadeCruzamento"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Probabilidade de Cruzamento</FormLabel>
@@ -120,7 +121,7 @@ export default function MainForm() {
 
           <FormField
             control={form.control}
-            name="qtd_elitismo"
+            name="qtdElitismo"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Qtd. Cromossomos por Elitismo</FormLabel>
@@ -166,7 +167,7 @@ export default function MainForm() {
 
           <FormField
             control={form.control}
-            name="iteracoes_sem_melhoria"
+            name="iteracoesSemMelhoria"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Qtd. Interações sem Melhoria</FormLabel>
