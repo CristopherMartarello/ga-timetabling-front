@@ -20,7 +20,7 @@ import { useState, useEffect } from "react";
 // Validação com Zod
 const formSchema = z.object({
   probabilidadeCruzamento: z.number().min(0).max(100).optional(),
-  mutacao: z.number().min(0).max(100).optional(),
+  probabilidadeMutacao: z.number().min(0).max(100).optional(),
   qtdElitismo: z.number().min(0).optional(),
   iteracoes: z.number().min(0).optional(),
   iteracoesSemMelhoria: z.number().min(0).optional(),
@@ -28,7 +28,7 @@ const formSchema = z.object({
 
 export default function MainForm() {
   const [probabilidadeCruzamento, setProbabilidadeCruzamento] = useState<number | undefined>(0);
-  const [mutacao, setMutacao] = useState<number | undefined>(0);
+  const [probabilidadeMutacao, setMutacao] = useState<number | undefined>(0);
   const [qtdElitismo, setQtdElitismo] = useState<number | undefined>(0);
   const [iteracoes, setIteracoes] = useState<number | undefined>(0);
   const [iteracoesSemMelhoria, setIteracoesSemMelhoria] = useState<number | undefined>(0);
@@ -39,12 +39,12 @@ export default function MainForm() {
 
   useEffect(() => {
     form.setValue("probabilidadeCruzamento", probabilidadeCruzamento ?? 0);
-    form.setValue("mutacao", mutacao ?? 0);
+    form.setValue("probabilidadeMutacao", probabilidadeMutacao ?? 0);
     form.setValue("qtdElitismo", qtdElitismo ?? 0);
     form.setValue("iteracoes", iteracoes ?? 0);
     form.setValue("iteracoesSemMelhoria", iteracoesSemMelhoria ?? 0);
   }, [
-    probabilidadeCruzamento, mutacao, qtdElitismo, iteracoes, iteracoesSemMelhoria, form
+    probabilidadeCruzamento, probabilidadeMutacao, qtdElitismo, iteracoes, iteracoesSemMelhoria, form
   ]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -98,7 +98,7 @@ export default function MainForm() {
 
           <FormField
             control={form.control}
-            name="mutacao"
+            name="probabilidadeMutacao"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Probabilidade de Mutação</FormLabel>
@@ -107,7 +107,7 @@ export default function MainForm() {
                     placeholder=""
                     type="number"
                     {...field}
-                    value={mutacao ?? 0}
+                    value={probabilidadeMutacao ?? 0}
                     onChange={(e) => setMutacao(Number(e.target.value))}
                   />
                 </FormControl>
