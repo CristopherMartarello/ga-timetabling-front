@@ -9,25 +9,25 @@ import {
 import { Badge } from "./ui/badge";
 
 export interface Curso {
-  codigo: (number | null)[]; 
-  nomeMateria: (string | null)[]; 
-  professorMinistrante: (string | null)[]; 
+  codigo: (number | null)[];
+  nomeMateria: (string | null)[];
+  professorMinistrante: (string | null)[];
 }
 
 export interface DataProps {
-  bestFitnessScore: []; 
-  contIteracoes: number; 
-  objTabela: Curso[]; 
-  tempoExecucao: number; 
+  bestFitnessScore: [];
+  contIteracoes: number;
+  iteracoesTotal: number;
+  objTabela: Curso[];
+  tempoExecucao: number;
   status?: number;
 }
 
 interface TableClassProps {
-  data: DataProps; 
+  data: DataProps;
 }
 
 const TableClass = ({ data }: TableClassProps) => {
-  
   // Ordem dos cursos
   const ordemCursos = [
     "Ciência da Computação",
@@ -65,15 +65,22 @@ const TableClass = ({ data }: TableClassProps) => {
     return seconds.toFixed(2);
   };
 
-  const diasDaSemana = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
-
-  const organizarAulasPorDia = (curso: any) => {
-    const diasAulas: { [key: string]: any[] } = {
-      Segunda: [],
-      Terça: [],
-      Quarta: [],
-      Quinta: [],
-      Sexta: [],
+  // Organiza as aulas por fase e por dia da semana
+  const organizarAulasPorFaseEDia = (curso: any) => {
+    const diasDaSemana = [
+      "Segunda-Feira",
+      "Terça-Feira",
+      "Quarta-Feira",
+      "Quinta-Feira",
+      "Sexta-Feira",
+    ];
+    const fasesAulas: { [key: string]: { [key: string]: any[] } } = {
+      "1° fase": {},
+      "2° fase": {},
+      "3° fase": {},
+      "4° fase": {},
+      "6° fase": {},
+      "8° fase": {},
     };
 
     // Define as fases para diferenciar os técnicos
@@ -91,17 +98,22 @@ const TableClass = ({ data }: TableClassProps) => {
           { fase: "8° fase", horario: ["08h - 10h", "10h - 12h"] },
         ];
 
-    // Organiza as aulas por dia
+    // Organiza as aulas por fase e dentro de cada fase, por dia da semana
     curso.codigo.forEach((codigo: any, idx: any) => {
       if (codigo !== -1 && codigo !== null) {
-        const faseIdx = Math.floor(idx / 10); 
-        const horarioIdx = idx % 10 < 5 ? 0 : 1; 
-        const diaIdx = idx % 5; 
+        const faseIdx = Math.floor(idx / 10);
+        const horarioIdx = idx % 10 < 5 ? 0 : 1;
+
+        const fase = fases[faseIdx].fase;
+        const diaIdx = idx % 5;
         const dia = diasDaSemana[diaIdx];
 
-        // Adiciona a aula ao dia correspondente
-        diasAulas[dia].push({
-          fase: fases[faseIdx].fase,
+        if (!fasesAulas[fase][dia]) {
+          fasesAulas[fase][dia] = [];
+        }
+
+        fasesAulas[fase][dia].push({
+          fase,
           horario: fases[faseIdx].horario[horarioIdx],
           codigo,
           nomeMateria: curso.nomeMateria[idx],
@@ -110,7 +122,7 @@ const TableClass = ({ data }: TableClassProps) => {
       }
     });
 
-    return diasAulas;
+    return fasesAulas;
   };
 
   return (
@@ -118,20 +130,32 @@ const TableClass = ({ data }: TableClassProps) => {
       <h1 className="font-semibold text-2xl text-center text-white bg-teal-800 rounded-sm p-4 mb-4">
         Algoritmo Genético - Timetabling Resultados
       </h1>
-      <div className="text-center text-sm mb-4">
-        <span>
-          Tempo de execução total: {formatTime(data.tempoExecucao)} segundos (
-          {data.tempoExecucao}ms)
-        </span>
+      <div className="text-center text-sm mb-4 space-x-3">
+        <Badge className="rounded-md">
+          <span className="text-sm font-semibold">
+            Qtd. Iterações sem melhoria: {data.contIteracoes}
+          </span>
+        </Badge>
+        <Badge className="rounded-md">
+          <span className="text-sm font-semibold">
+            Qtd. Máxima de iterações: {data.iteracoesTotal}
+          </span>
+        </Badge>
+        <Badge className="rounded-md">
+          <span className="text-sm font-semibold">
+            Tempo de execução: {formatTime(data.tempoExecucao)} segundos (
+            {data.tempoExecucao}ms)
+          </span>
+        </Badge>
       </div>
       {cursosOrdenados.map((curso, index) => {
-        const diasAulas = organizarAulasPorDia(curso);
+        const fasesAulas = organizarAulasPorFaseEDia(curso);
 
         return (
           <div key={index} className="my-6">
-            <div className="flex justify-center items-center text-center mb-4 space-x-2">
-              <h2 className="text-2xl font-semibold">{curso.nomeCurso}</h2>
-              <h2 className="text-2xl font-semibold">|</h2>
+            <div className="flex justify-center items-center text-center bg-neutral-300 rounded-sm p-1 mb-4 space-x-2">
+              <h2 className="text-xl font-semibold">{curso.nomeCurso}</h2>
+              <h2 className="text-xl font-semibold">|</h2>
               <Badge className="rounded-md">
                 <span className="text-sm font-semibold">
                   Nota do melhor cromossomo: {curso.bestFitnessScore}
@@ -139,36 +163,47 @@ const TableClass = ({ data }: TableClassProps) => {
               </Badge>
             </div>
 
-            {diasDaSemana.map((dia, idx) => {
-              const aulasNoDia = diasAulas[dia];
-              
-              if (aulasNoDia.length === 0) return null;
+            {Object.keys(fasesAulas).map((fase, faseIdx) => {
+              const diasDaFase = fasesAulas[fase];
+
+              if (Object.keys(diasDaFase).length === 0) return null;
 
               return (
-                <div key={idx} className="my-4">
-                  <h3 className="text-xl font-semibold mb-2">{dia}</h3>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableCell className="w-1/12">Horário</TableCell>
-                        <TableCell className="w-1/12">Fase</TableCell>
-                        <TableCell className="w-1/12">Código</TableCell>
-                        <TableCell className="w-1/12">Matéria</TableCell>
-                        <TableCell className="w-1/12">Professor</TableCell>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {aulasNoDia.map((aula, aulaIdx) => (
-                        <TableRow key={aulaIdx}>
-                          <TableCell>{aula.horario}</TableCell>
-                          <TableCell>{aula.fase}</TableCell>
-                          <TableCell>{aula.codigo}</TableCell>
-                          <TableCell>{aula.nomeMateria}</TableCell>
-                          <TableCell>{aula.professor}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                <div key={faseIdx} className="my-4">
+                  <h3 className="text-xl font-semibold mb-2">{fase}</h3>
+                  <hr className="bg-teal-800 text-teal-800" />
+                  {Object.keys(diasDaFase).map((dia, diaIdx) => {
+                    const aulasNoDia = diasDaFase[dia];
+                    if (aulasNoDia.length === 0) return null;
+
+                    return (
+                      <div key={diaIdx} className="my-4 px-4 py-2">
+                        <h4 className="text-lg font-semibold">{dia}</h4>
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableCell className="w-1/12">Horário</TableCell>
+                              <TableCell className="w-1/12">Código</TableCell>
+                              <TableCell className="w-1/12">Matéria</TableCell>
+                              <TableCell className="w-1/12">
+                                Professor
+                              </TableCell>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {aulasNoDia.map((aula, aulaIdx) => (
+                              <TableRow key={aulaIdx}>
+                                <TableCell>{aula.horario}</TableCell>
+                                <TableCell>{aula.codigo}</TableCell>
+                                <TableCell>{aula.nomeMateria}</TableCell>
+                                <TableCell>{aula.professor}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    );
+                  })}
                 </div>
               );
             })}
