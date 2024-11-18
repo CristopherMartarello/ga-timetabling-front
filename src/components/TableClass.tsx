@@ -15,7 +15,7 @@ export interface Curso {
 }
 
 export interface DataProps {
-  bestFitnessScore: [];
+  bestFitnessScore: number;
   contIteracoes: number;
   iteracoesTotal: number;
   objTabela: Curso[];
@@ -49,7 +49,6 @@ const TableClass = ({ data }: TableClassProps) => {
   const cursosComNomesEFitness = data.objTabela.map((curso, index) => ({
     ...curso,
     nomeCurso: ordemCursos[index],
-    bestFitnessScore: data.bestFitnessScore[index],
   }));
 
   // Ordenando os cursos de acordo com a ordem que estou recebendo a lista do backend
@@ -143,6 +142,11 @@ const TableClass = ({ data }: TableClassProps) => {
         </Badge>
         <Badge className="rounded-md">
           <span className="text-sm font-semibold">
+            Nota do melhor cromossomo: {data.bestFitnessScore} (max = 6000)
+          </span>
+        </Badge>
+        <Badge className="rounded-md">
+          <span className="text-sm font-semibold">
             Tempo de execução: {formatTime(data.tempoExecucao)} segundos (
             {data.tempoExecucao}ms)
           </span>
@@ -154,13 +158,7 @@ const TableClass = ({ data }: TableClassProps) => {
         return (
           <div key={index} className="my-6">
             <div className="flex justify-center items-center text-center bg-neutral-300 rounded-sm p-1 mb-4 space-x-2">
-              <h2 className="text-xl font-semibold">{curso.nomeCurso}</h2>
-              <h2 className="text-xl font-semibold">|</h2>
-              <Badge className="rounded-md">
-                <span className="text-sm font-semibold">
-                  Nota do melhor cromossomo: {curso.bestFitnessScore}
-                </span>
-              </Badge>
+              <h2 className="text-xl font-semibold">{curso.nomeCurso}</h2>  
             </div>
 
             {Object.keys(fasesAulas).map((fase, faseIdx) => {
