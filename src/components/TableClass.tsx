@@ -73,6 +73,7 @@ const TableClass = ({ data }: TableClassProps) => {
       "Quinta-Feira",
       "Sexta-Feira",
     ];
+
     const fasesAulas: { [key: string]: { [key: string]: any[] } } = {
       "1° fase": {},
       "2° fase": {},
@@ -81,9 +82,17 @@ const TableClass = ({ data }: TableClassProps) => {
       "6° fase": {},
       "8° fase": {},
     };
-
-    // Define as fases para diferenciar os técnicos
-    const fases = cursosTecnicos.includes(curso.nomeCurso)
+  
+    const isEngenhariaQuimica = curso.nomeCurso === "Engenharia Química";
+  
+    // Define as fases para diferenciar os técnicos e ajustar para Engenharia Química, restrição de 6 fases
+    const fases = isEngenhariaQuimica
+      ? [
+          { fase: "2° fase", horario: ["08h - 10h", "10h - 12h"] },
+          { fase: "4° fase", horario: ["08h - 10h", "10h - 12h"] },
+          { fase: "6° fase", horario: ["08h - 10h", "10h - 12h"] },
+        ]
+      : cursosTecnicos.includes(curso.nomeCurso)
       ? [
           { fase: "1° fase", horario: ["08h - 10h", "10h - 12h"] },
           { fase: "2° fase", horario: ["08h - 10h", "10h - 12h"] },
@@ -96,21 +105,21 @@ const TableClass = ({ data }: TableClassProps) => {
           { fase: "6° fase", horario: ["08h - 10h", "10h - 12h"] },
           { fase: "8° fase", horario: ["08h - 10h", "10h - 12h"] },
         ];
-
+  
     // Organiza as aulas por fase e dentro de cada fase, por dia da semana
     curso.codigo.forEach((codigo: any, idx: any) => {
       if (codigo !== -1 && codigo !== null) {
         const faseIdx = Math.floor(idx / 10);
         const horarioIdx = idx % 10 < 5 ? 0 : 1;
-
+  
         const fase = fases[faseIdx].fase;
         const diaIdx = idx % 5;
         const dia = diasDaSemana[diaIdx];
-
+  
         if (!fasesAulas[fase][dia]) {
           fasesAulas[fase][dia] = [];
         }
-
+  
         fasesAulas[fase][dia].push({
           fase,
           horario: fases[faseIdx].horario[horarioIdx],
@@ -120,7 +129,7 @@ const TableClass = ({ data }: TableClassProps) => {
         });
       }
     });
-
+  
     return fasesAulas;
   };
 
